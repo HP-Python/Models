@@ -18,9 +18,7 @@ class AzureSpeechModel:
         self.speech_config = speechsdk.SpeechConfig(
             subscription=speech_key, region=region
         )
-        self.speech_config.speech_synthesis_voice_name = (
-            "zh-CN-XiaochenMultilingualNeural"  # 选择语音角色
-        )
+        # zh-CN-XiaochenMultilingualNeural  # 选择语音角色
 
         # 设置语音输出为默认扬声器
         self.audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
@@ -30,9 +28,19 @@ class AzureSpeechModel:
             speech_config=self.speech_config, audio_config=self.audio_config
         )
 
-    def speek(self, input_text: str) -> None:
+    def speek(
+        self, in_voice_name="zh-CN-XiaochenMultilingualNeural", in_text=None
+    ) -> None:
         # 合成语音
-        _ = self.synthesizer.speak_text_async(input_text).get()
+        ssml = """<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='zh-CN'>
+        <voice name='{}'>
+            {}
+        </voice>
+        </speak>""".format(
+            in_voice_name, in_text
+        )
+        print(ssml)
+        _ = self.synthesizer.speak_ssml_async(ssml).get()
 
 
 if __name__ == "__main__":
@@ -40,4 +48,4 @@ if __name__ == "__main__":
 
     text = "在一个遥远的小村庄里"
 
-    app.speek(input_text=text)
+    app.speek(in_text=text)
